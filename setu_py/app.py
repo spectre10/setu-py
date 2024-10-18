@@ -1,9 +1,16 @@
 from fastapi import FastAPI, HTTPException
 from .db import Database
 from contextlib import asynccontextmanager
+from fastapi.responses import JSONResponse
+import ujson
+from psycopg2.extras import RealDictCursor
 
 # Initialize the Database class
 db = Database()
+
+class CustomUJSONResponse(JSONResponse):
+    def render(self, content: any) -> bytes:
+        return ujson.dumps(content).encode("utf-8")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -19,8 +26,8 @@ app = FastAPI(lifespan=lifespan)
 def read_root():
     return {"message": "Welcome to FastAPI with PostgreSQL"}
 
-@app.get("/users")
-def get_users(ref: str):
+@app.get("/ref", response_class=CustomUJSONResponse)
+def get_ref(ref: str):
     conn = None
     try:
         # Get a connection from the pool
@@ -33,6 +40,33 @@ def get_users(ref: str):
         users = cur.fetchall()
         cur.close()
         return {"users": users}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if conn:
+            # Return the connection to the pool
+            db.return_connection(conn)
+
+@app.get("/id", response_class=CustomUJSONResponse)
+def get_id(id: int):
+    conn = None
+    try:
+        # Get a connection from the pool
+        conn = db.get_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute(f"""
+            SELECT * FROM watch_model_data
+            WHERE id = {id};
+        """)
+        model = cur.fetchone()
+        cur.execute(f"""
+            SELECT * FROM watch_collection_data
+            WHERE id = {model["watch_collection_id"]};
+        """)
+        col = cur.fetchone()
+        model["watch_collection_data"] = col
+        cur.close()
+        return model
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
