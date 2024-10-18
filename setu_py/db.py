@@ -1,7 +1,8 @@
 from psycopg2 import pool
 import logging
 
-DATABASE_URL = "postgresql://watch_user:localtest@localhost:5432/watch_prod_db"
+# DATABASE_URL = "postgresql://watch_user:localtest@localhost:5432/watch_prod_db"
+DATABASE_URL = "postgresql://prod_user:GiRtSarFzrf9eGBa@watch-production-1-replica.cnh2gcqstmc3.us-east-1.rds.amazonaws.com:5432/prod_db"
 
 db_pool = None
 
