@@ -8,7 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
 fastapi = "^0.115.2"
-psycopg2 = "^2.9.10"
+psycopg2-binary = "^2.9.10"
 gunicorn = "^23.0.0"
 uvicorn = "^0.32.0"
 ujson = "^5.10.0"
