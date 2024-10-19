@@ -1,16 +1,16 @@
 from fastapi import FastAPI, HTTPException
 from .db import Database
 from contextlib import asynccontextmanager
-from fastapi.responses import JSONResponse
-import ujson
+from fastapi.responses import ORJSONResponse
 from psycopg2.extras import RealDictCursor
+import orjson
 
 # Initialize the Database class
 db = Database()
 
-class CustomUJSONResponse(JSONResponse):
-    def render(self, content: any) -> bytes:
-        return ujson.dumps(content).encode("utf-8")
+class CustomUJSONResponse(ORJSONResponse):
+    def render(self, content) -> bytes:
+        return orjson.dumps(content)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

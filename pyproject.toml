@@ -11,7 +11,7 @@ fastapi = "^0.115.2"
 psycopg2-binary = "^2.9.10"
 gunicorn = "^23.0.0"
 uvicorn = "^0.32.0"
-ujson = "^5.10.0"
+orjson = "^3.10.9"
 
 
 [build-system]
